@@ -1,0 +1,32 @@
+QTabWidget::pane {
+    border: 1px solid rgb(24, 36, 31);
+    top:-1px;
+    background: rgb(245, 245, 245);
+}
+
+QTabWidget::tab-bar {
+   background: red;
+}
+
+QTabBar::tab {
+    background: rgb(33, 37, 43);
+    border: 1px solid rgb(24, 36, 31);
+    padding: 5px 50px;
+    color: #6c7079;
+}
+
+QTabBar::tab:selected {
+    background: rgb(40, 44, 52);
+    border-left: 2px solid rgb(82, 139, 255);
+    margin-bottom: -1px;
+    color: white;
+}
+
+QTabBar::close-button {
+    image: url(":/close.png");
+}
+
+QTabBar::close-button:hover {
+    image: url(":/close.png");
+    background: rgb(82, 139, 255);
+}

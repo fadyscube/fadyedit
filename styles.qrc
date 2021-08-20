@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tabs.css</file>
+        <file>aboutbox.css</file>
+        <file>textedit.css</file>
+    </qresource>
+</RCC>
