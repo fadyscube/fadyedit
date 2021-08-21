@@ -17,7 +17,21 @@
    <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(40, 44, 52);</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QSplitter" name="splitter">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>368</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -35,6 +49,7 @@ background-color: rgb(40, 44, 52);</string>
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpen_folder"/>
     <addaction name="actionNew"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
@@ -163,6 +178,11 @@ background-color: rgb(40, 44, 52);</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionOpen_folder">
+   <property name="text">
+    <string>Open folder</string>
    </property>
   </action>
  </widget>

@@ -4,6 +4,13 @@
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QPlainTextEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QFileSystemModel>
+#include <QTreeView>
+#include <QSplitter>
+#include <QResizeEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,9 +54,19 @@ private slots:
 
     void on_actionAbout_Fadyedit_triggered();
 
+    void on_actionOpen_folder_triggered();
+
+    void openTreeViewFile(QModelIndex index);
+    void openNewTabTreeViewFile(QModelIndex index);
+
 private:
     Ui::MainWindow *ui;
 
-    QTabWidget *tabWidget = new QTabWidget(this);
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    QSplitter *window = new QSplitter(this);
+    QFileSystemModel *dirModel = new QFileSystemModel(this);
+    QTreeView *treeView = new QTreeView;
+
+    QTabWidget *tabsWidget = new QTabWidget(this);
 };
 #endif // MAINWINDOW_H
