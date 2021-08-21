@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QModelIndex>
+#include <QFontMetrics>
 
 using namespace std;
 
@@ -19,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->treeView->setMaximumWidth(0);
     this->treeView->setMinimumWidth(0);
+
+    QFile treeviewFile(":/treeview.css");
+    treeviewFile.open(QFile::ReadOnly);
+    QString treeviewStyle = QLatin1String(treeviewFile.readAll());
+    this->treeView->setStyleSheet(treeviewStyle);
 
     this->mainLayout->addWidget(this->treeView);
     this->mainLayout->addWidget(this->tabsWidget);
@@ -63,6 +69,7 @@ void MainWindow::createTab()
     font.setFamily("Source Code Pro");
     fileEdit->setFont(font);
     fileEdit->setObjectName("fileEdit");
+    fileEdit->setTabStopDistance(QFontMetricsF(fileEdit->font()).horizontalAdvance(' ') * 4);
 
     QFile texteditFile(":/textedit.css");
     texteditFile.open(QFile::ReadOnly);
@@ -72,6 +79,11 @@ void MainWindow::createTab()
     QLabel *status = new QLabel(this);
     status->setText("No file opened.");
     status->setObjectName("status");
+
+    QFile statusFile(":/status.css");
+    statusFile.open(QFile::ReadOnly);
+    QString statusStyle = QLatin1String(statusFile.readAll());
+    status->setStyleSheet(statusStyle);
 
     tabsLayout->addWidget(fileEdit);
     tabsLayout->addWidget(status);
@@ -168,42 +180,8 @@ void MainWindow::on_actionClose_file_triggered()
 void MainWindow::on_actionOpen_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open the file");
-    QFile file(filePath);
-    QFileInfo fileName(filePath);
 
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file : " + file.errorString());
-
-        return;
-    }
-
-    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
-    for (int i=0; i<statusList.count(); ++i) {
-        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            statusList[i]->setText(filePath);
-
-            break;
-        }
-    }
-
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
-    setWindowTitle("Fadyedit | " + filePath);
-
-    QTextStream in(&file);
-    QString text = in.readAll();
-
-    QTextStream out(stdout);
-
-    QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
-    for (int i=0; i<fileEditList.count(); ++i) {
-        if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            fileEditList[i]->setPlainText(text);
-
-            break;
-        }
-    }
-
-    file.close();
+    MainWindow::openTabFile(filePath);
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -291,42 +269,7 @@ void MainWindow::openTreeViewFile(QModelIndex index)
 
     QString filePath = this->dirModel->fileInfo(index).absoluteFilePath();
 
-    QFile file(filePath);
-    QFileInfo fileName(filePath);
-
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file : " + file.errorString());
-
-        return;
-    }
-
-    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
-    for (int i=0; i<statusList.count(); ++i) {
-        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            statusList[i]->setText(filePath);
-
-            break;
-        }
-    }
-
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
-    setWindowTitle("Fadyedit | " + filePath);
-
-    QTextStream in(&file);
-    QString text = in.readAll();
-
-    QTextStream out(stdout);
-
-    QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
-    for (int i=0; i<fileEditList.count(); ++i) {
-        if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            fileEditList[i]->setPlainText(text);
-
-            break;
-        }
-    }
-
-    file.close();
+    MainWindow::openTabFile(filePath);
 }
 
 void MainWindow::openNewTabTreeViewFile(QModelIndex index)
@@ -335,8 +278,61 @@ void MainWindow::openNewTabTreeViewFile(QModelIndex index)
 
     QString filePath = this->dirModel->fileInfo(index).absoluteFilePath();
 
+    MainWindow::openTabFile(filePath);
+}
+
+void MainWindow::openTabFile(QString filePath)
+{
     QFile file(filePath);
     QFileInfo fileName(filePath);
+    QString fileExtension = fileName.suffix();
+    QString fileLang;
+
+    if (fileExtension == "py") {
+        fileLang = "Python";
+    } else if (fileExtension == "cpp") {
+        fileLang = "C++";
+    } else if (fileExtension == "c") {
+        fileLang = "C";
+    } else if (fileExtension == "cs") {
+        fileLang = "C#";
+    } else if (fileExtension == "cpp") {
+        fileLang = "Python";
+    } else if (fileExtension == "css") {
+        fileLang = "CSS";
+    } else if (fileExtension == "cpp") {
+        fileLang = "Python";
+    } else if (fileExtension == "go") {
+        fileLang = "Go";
+    } else if (fileExtension == "cpp") {
+        fileLang = "Python";
+    } else if (fileExtension == "html") {
+        fileLang = "HTML";
+    } else if (fileExtension == "js") {
+        fileLang = "Javascript";
+    } else if (fileExtension == "java") {
+        fileLang = "Java";
+    } else if (fileExtension == "json") {
+        fileLang = "JSON";
+    } else if (fileExtension == "md") {
+        fileLang = "Markdown";
+    } else if (fileExtension == "pl") {
+        fileLang = "Perl";
+    } else if (fileExtension == "php") {
+        fileLang = "php";
+    } else if (fileExtension == "r") {
+        fileLang = "";
+    } else if (fileExtension == "rb") {
+        fileLang = "Ruby";
+    } else if (fileExtension == "rb") {
+        fileLang = "Ruby";
+    } else if (fileExtension == "rb") {
+        fileLang = "Ruby";
+    } else if (fileExtension == "sql") {
+        fileLang = "SQL";
+    } else if (fileExtension == "xml") {
+        fileLang = "XML";
+    }
 
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot open file : " + file.errorString());
@@ -348,6 +344,7 @@ void MainWindow::openNewTabTreeViewFile(QModelIndex index)
     for (int i=0; i<statusList.count(); ++i) {
         if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
             statusList[i]->setText(filePath);
+//            statusList[i]->setText(filePath + " | " + fileLang);
 
             break;
         }

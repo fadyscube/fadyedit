@@ -57,7 +57,10 @@ private slots:
     void on_actionOpen_folder_triggered();
 
     void openTreeViewFile(QModelIndex index);
+
     void openNewTabTreeViewFile(QModelIndex index);
+
+    void openTabFile(QString filePath);
 
 private:
     Ui::MainWindow *ui;

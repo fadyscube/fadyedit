@@ -4,5 +4,7 @@
         <file>aboutbox.css</file>
         <file>textedit.css</file>
         <file>menubar.css</file>
+        <file>treeview.css</file>
+        <file>status.css</file>
     </qresource>
 </RCC>
