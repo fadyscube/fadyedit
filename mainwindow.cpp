@@ -111,10 +111,13 @@ void MainWindow::on_actionSave_as_triggered()
     }
 
     setWindowTitle("Fadyedit | " + filePath);
+
     QTextStream out(&file);
 
     QString text = MainWindow::currentTextEdit()->toPlainText();
     out << text;
+
+    MainWindow::openTabFile(filePath);
 
     file.close();
 }
