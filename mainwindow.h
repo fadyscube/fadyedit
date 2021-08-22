@@ -11,6 +11,7 @@
 #include <QTreeView>
 #include <QSplitter>
 #include <QResizeEvent>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -61,6 +62,10 @@ private slots:
     void openNewTabTreeViewFile(QModelIndex index);
 
     void openTabFile(QString filePath);
+
+    QPlainTextEdit* currentTextEdit();
+
+    QLabel* currentStatus();
 
 private:
     Ui::MainWindow *ui;

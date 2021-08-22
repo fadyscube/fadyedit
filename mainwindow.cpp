@@ -112,52 +112,40 @@ void MainWindow::on_actionSave_as_triggered()
 
     setWindowTitle("Fadyedit | " + filePath);
     QTextStream out(&file);
-    QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
 
-    for (int i=0; i<fileEditList.count(); ++i) {
-        if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            QString text = fileEditList[i]->toPlainText();
-            out << text;
-
-            break;
-        }
-    }
+    QString text = MainWindow::currentTextEdit()->toPlainText();
+    out << text;
 
     file.close();
 }
 
 void MainWindow::on_actionCut_triggered()
 {
-    QPlainTextEdit *fileEdit = this->tabsWidget->findChild<QPlainTextEdit *>("fileEdit");
-    fileEdit->cut();
+    MainWindow::currentTextEdit()->cut();
 }
 
 
 void MainWindow::on_actionCopy_triggered()
 {
-    QPlainTextEdit *fileEdit = this->tabsWidget->findChild<QPlainTextEdit *>("fileEdit");
-    fileEdit->copy();
+    MainWindow::currentTextEdit()->copy();
 }
 
 
 void MainWindow::on_actionPaste_triggered()
 {
-    QPlainTextEdit *fileEdit = this->tabsWidget->findChild<QPlainTextEdit *>("fileEdit");
-    fileEdit->paste();
+    MainWindow::currentTextEdit()->paste();
 }
 
 
 void MainWindow::on_actionUndo_triggered()
 {
-    QPlainTextEdit *fileEdit = this->tabsWidget->findChild<QPlainTextEdit *>("fileEdit");
-    fileEdit->undo();
+    MainWindow::currentTextEdit()->undo();
 }
 
 
 void MainWindow::on_actionRedo_triggered()
 {
-    QPlainTextEdit *fileEdit = this->tabsWidget->findChild<QPlainTextEdit *>("fileEdit");
-    fileEdit->redo();
+    MainWindow::currentTextEdit()->redo();
 }
 
 
@@ -186,15 +174,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName;
-    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
-    for (int i=0; i<statusList.count(); ++i) {
-        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            fileName = statusList[i]->text();
-
-            break;
-        }
-    }
+    QString fileName = MainWindow::currentStatus()->text();
 
     QFile file(fileName);
 
@@ -205,17 +185,10 @@ void MainWindow::on_actionSave_triggered()
     }
 
     QTextStream out(&file);
-    QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
 
     QString text;
 
-    for (int i=0; i<fileEditList.count(); ++i) {
-        if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            text = fileEditList[i]->toPlainText();
-
-            break;
-        }
-    }
+    text = MainWindow::currentTextEdit()->toPlainText();
 
     out << text;
 
@@ -285,54 +258,6 @@ void MainWindow::openTabFile(QString filePath)
 {
     QFile file(filePath);
     QFileInfo fileName(filePath);
-    QString fileExtension = fileName.suffix();
-    QString fileLang;
-
-    if (fileExtension == "py") {
-        fileLang = "Python";
-    } else if (fileExtension == "cpp") {
-        fileLang = "C++";
-    } else if (fileExtension == "c") {
-        fileLang = "C";
-    } else if (fileExtension == "cs") {
-        fileLang = "C#";
-    } else if (fileExtension == "cpp") {
-        fileLang = "Python";
-    } else if (fileExtension == "css") {
-        fileLang = "CSS";
-    } else if (fileExtension == "cpp") {
-        fileLang = "Python";
-    } else if (fileExtension == "go") {
-        fileLang = "Go";
-    } else if (fileExtension == "cpp") {
-        fileLang = "Python";
-    } else if (fileExtension == "html") {
-        fileLang = "HTML";
-    } else if (fileExtension == "js") {
-        fileLang = "Javascript";
-    } else if (fileExtension == "java") {
-        fileLang = "Java";
-    } else if (fileExtension == "json") {
-        fileLang = "JSON";
-    } else if (fileExtension == "md") {
-        fileLang = "Markdown";
-    } else if (fileExtension == "pl") {
-        fileLang = "Perl";
-    } else if (fileExtension == "php") {
-        fileLang = "php";
-    } else if (fileExtension == "r") {
-        fileLang = "";
-    } else if (fileExtension == "rb") {
-        fileLang = "Ruby";
-    } else if (fileExtension == "rb") {
-        fileLang = "Ruby";
-    } else if (fileExtension == "rb") {
-        fileLang = "Ruby";
-    } else if (fileExtension == "sql") {
-        fileLang = "SQL";
-    } else if (fileExtension == "xml") {
-        fileLang = "XML";
-    }
 
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot open file : " + file.errorString());
@@ -340,15 +265,7 @@ void MainWindow::openTabFile(QString filePath)
         return;
     }
 
-    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
-    for (int i=0; i<statusList.count(); ++i) {
-        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            statusList[i]->setText(filePath);
-//            statusList[i]->setText(filePath + " | " + fileLang);
-
-            break;
-        }
-    }
+    MainWindow::currentStatus()->setText(filePath);
 
     this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
     setWindowTitle("Fadyedit | " + filePath);
@@ -358,14 +275,31 @@ void MainWindow::openTabFile(QString filePath)
 
     QTextStream out(stdout);
 
+    MainWindow::currentTextEdit()->setPlainText(text);
+
+    file.close();
+}
+
+QPlainTextEdit* MainWindow::currentTextEdit()
+{
     QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
     for (int i=0; i<fileEditList.count(); ++i) {
         if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
-            fileEditList[i]->setPlainText(text);
-
-            break;
+            return fileEditList[i];
         }
     }
 
-    file.close();
+    return new QPlainTextEdit;
+}
+
+QLabel* MainWindow::currentStatus()
+{
+    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
+    for (int i=0; i<statusList.count(); ++i) {
+        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
+            return statusList[i];
+        }
+    }
+
+    return new QLabel;
 }
