@@ -306,3 +306,14 @@ QLabel* MainWindow::currentStatus()
 
     return new QLabel;
 }
+
+void MainWindow::on_actionZoom_in_triggered()
+{
+    MainWindow::currentTextEdit()->zoomIn(2);
+}
+
+void MainWindow::on_actionZoom_out_triggered()
+{
+    MainWindow::currentTextEdit()->zoomOut(2);
+}
+
