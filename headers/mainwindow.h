@@ -1,17 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QTabWidget>
-#include <QPlainTextEdit>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QWidget>
 #include <QFileSystemModel>
-#include <QTreeView>
-#include <QSplitter>
-#include <QResizeEvent>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QMainWindow>
+#include <QPlainTextEdit>
+#include <QSplitter>
+#include <QTreeView>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
