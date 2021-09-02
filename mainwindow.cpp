@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->treeView->setMaximumWidth(0);
     this->treeView->setMinimumWidth(0);
 
-    QFile treeviewFile(":/treeview.css");
+    QFile treeviewFile(":/styles/treeview.css");
     treeviewFile.open(QFile::ReadOnly);
     QString treeviewStyle = QLatin1String(treeviewFile.readAll());
     this->treeView->setStyleSheet(treeviewStyle);
@@ -42,12 +42,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this->tabsWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     this->tabsWidget->setMovable(true);
 
-    QFile tabsFile(":/tabs.css");
+    QFile tabsFile(":/styles/tabs.css");
     tabsFile.open(QFile::ReadOnly);
     QString tabsStyle = QLatin1String(tabsFile.readAll());
     this->tabsWidget->setStyleSheet(tabsStyle);
 
-    QFile menubarFile(":/menubar.css");
+    QFile menubarFile(":/styles/menubar.css");
     menubarFile.open(QFile::ReadOnly);
     QString menubarStyle = QLatin1String(menubarFile.readAll());
     ui->menubar->setStyleSheet(menubarStyle);
@@ -71,7 +71,7 @@ void MainWindow::createTab()
     fileEdit->setObjectName("fileEdit");
     fileEdit->setTabStopDistance(QFontMetricsF(fileEdit->font()).horizontalAdvance(' ') * 4);
 
-    QFile texteditFile(":/textedit.css");
+    QFile texteditFile(":/styles/textedit.css");
     texteditFile.open(QFile::ReadOnly);
     QString texteditStyle = QLatin1String(texteditFile.readAll());
     fileEdit->setStyleSheet(texteditStyle);
@@ -80,7 +80,7 @@ void MainWindow::createTab()
     status->setText("No file opened.");
     status->setObjectName("status");
 
-    QFile statusFile(":/status.css");
+    QFile statusFile(":/styles/status.css");
     statusFile.open(QFile::ReadOnly);
     QString statusStyle = QLatin1String(statusFile.readAll());
     status->setStyleSheet(statusStyle);
@@ -209,7 +209,7 @@ void MainWindow::closeTab(int index)
 
 void MainWindow::on_actionAbout_Fadyedit_triggered()
 {
-    QFile abouboxFile(":/aboutbox.css");
+    QFile abouboxFile(":/styles/aboutbox.css");
     abouboxFile.open(QFile::ReadOnly);
     QString aboutboxStyle = QLatin1String(abouboxFile.readAll());
 

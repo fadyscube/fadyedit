@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styles/treeview.css</file>
+        <file>styles/textedit.css</file>
+        <file>styles/tabs.css</file>
+        <file>styles/status.css</file>
+        <file>styles/menubar.css</file>
+        <file>styles/aboutbox.css</file>
+        <file>images/close.png</file>
+    </qresource>
+</RCC>

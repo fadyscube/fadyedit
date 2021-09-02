@@ -23,10 +23,10 @@ QTabBar::tab:selected {
 }
 
 QTabBar::close-button {
-    image: url(":/close.png");
+    image: url(":/images/close.png");
 }
 
 QTabBar::close-button:hover {
-    image: url(":/close.png");
+    image: url(":/images/close.png");
     background: rgb(82, 139, 255);
 }
