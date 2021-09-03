@@ -70,7 +70,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QHBoxLayout *mainLayout = new QHBoxLayout;
     QSplitter *window = new QSplitter(this);
     QFileSystemModel *dirModel = new QFileSystemModel(this);
     QTreeView *treeView = new QTreeView;

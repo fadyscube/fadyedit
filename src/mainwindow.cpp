@@ -26,16 +26,12 @@ MainWindow::MainWindow(QWidget *parent)
     QString treeviewStyle = QLatin1String(treeviewFile.readAll());
     this->treeView->setStyleSheet(treeviewStyle);
 
-    this->mainLayout->addWidget(this->treeView);
-    this->mainLayout->addWidget(this->tabsWidget);
+    this->window->addWidget(this->treeView);
+    this->window->addWidget(this->tabsWidget);
 
-//    connect(this->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(openNewTabTreeViewFile(QModelIndex)));
     connect(this->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(openTreeViewFile(QModelIndex)));
 
-    this->window->setLayout(this->mainLayout);
-
     setCentralWidget(this->window);
-    this->setLayout(this->mainLayout);
 
     MainWindow::createTab();
     this->tabsWidget->setTabsClosable(true);
@@ -62,7 +58,7 @@ void MainWindow::createTab()
 {
 
     QFrame *tabFrame = new QFrame(this);
-    QVBoxLayout *tabsLayout = new QVBoxLayout(this->tabsWidget->currentWidget());
+    QVBoxLayout *tabsLayout = new QVBoxLayout(tabFrame);
 
     QPlainTextEdit *fileEdit = new QPlainTextEdit();
     QFont font = fileEdit->document()->defaultFont();
@@ -88,7 +84,7 @@ void MainWindow::createTab()
     tabsLayout->addWidget(fileEdit);
     tabsLayout->addWidget(status);
 
-    tabFrame->setLayout(tabsLayout);
+//    tabFrame->setLayout(tabsLayout);
 
     int tab = this->tabsWidget->addTab(tabFrame, "Untitled");
     this->tabsWidget->setCurrentIndex(tab);
@@ -160,11 +156,7 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionClose_file_triggered()
 {
-//    if (this->tabsWidget->count() == 1) {
-//        QApplication::quit();
-//    } else {
     this->tabsWidget->removeTab(this->tabsWidget->currentIndex());
-//    }
 }
 
 
@@ -200,11 +192,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::closeTab(int index)
 {
-//    if (this->tabsWidget->count() == 1) {
-//        QApplication::quit();
-//    } else {
     this->tabsWidget->removeTab(index);
-//    }
 }
 
 void MainWindow::on_actionAbout_Fadyedit_triggered()
@@ -235,8 +223,8 @@ void MainWindow::on_actionOpen_folder_triggered()
     this->treeView->hideColumn(2);
     this->treeView->hideColumn(3);
 
-    this->treeView->setMaximumWidth(this->width() * 40 / 100);
     this->treeView->setMinimumWidth(this->width() * 20 / 100);
+    this->treeView->setMaximumWidth(this->width() * 30 / 100);
 }
 
 void MainWindow::openTreeViewFile(QModelIndex index)
