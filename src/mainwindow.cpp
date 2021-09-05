@@ -37,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(this->window);
 
-    MainWindow::createTab();
     this->tabsWidget->setTabsClosable(true);
     connect(this->tabsWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     this->tabsWidget->setMovable(true);
@@ -76,7 +75,6 @@ void MainWindow::createTab()
     fileEdit->setStyleSheet(texteditStyle);
 
     QLabel *status = new QLabel(this);
-//    status->setText("No file opened.");
     status->setText("Line 0, Column 0");
     status->setObjectName("status");
 
@@ -93,6 +91,8 @@ void MainWindow::createTab()
     int tab = this->tabsWidget->addTab(tabFrame, "Untitled");
     this->tabsWidget->setCurrentIndex(tab);
 
+    this->tabsWidget->setTabToolTip(tab, "Untitled");
+
     connect(MainWindow::currentTextEdit(), SIGNAL(textChanged()), this, SLOT(textEditChanged()));
     connect(MainWindow::currentTextEdit(), SIGNAL(cursorPositionChanged()), this, SLOT(updateStatus()));
 }
@@ -104,6 +104,10 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
+    if (this->tabsWidget->count() == 0) {
+        QMessageBox::warning(this, "Warning", "Cannot save file !");
+        return;
+    }
     QString filePath = QFileDialog::getSaveFileName(this, "Save as ...");
     QFile file(filePath);
 
@@ -119,7 +123,6 @@ void MainWindow::on_actionSave_as_triggered()
 
     QString text = MainWindow::currentTextEdit()->toPlainText();
     out << text;
-
 
     file.close();
 
@@ -173,12 +176,12 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open the file");
 
+    MainWindow::createTab();
     MainWindow::openTabFile(filePath);
 }
 
 void MainWindow::on_actionSave_triggered()
 {
-//    QString fileName = MainWindow::currentStatus()->text();
     QString fileName = this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex());
 
     QFile file(fileName);
@@ -214,7 +217,11 @@ void MainWindow::closeTab(int index)
 
         switch (ret) {
             case QMessageBox::Yes:
-                MainWindow::on_actionSave_triggered();
+                if (this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex()) == "Untitled"){
+                    MainWindow::on_actionSave_as_triggered();
+                } else {
+                    MainWindow::on_actionSave_triggered();
+                }
                 this->tabsWidget->removeTab(index);
                 break;
             case QMessageBox::No:
@@ -285,7 +292,6 @@ void MainWindow::openTabFile(QString filePath)
         return;
     }
 
-//    MainWindow::currentStatus()->setText(filePath);
     this->tabsWidget->setTabToolTip(this->tabsWidget->currentIndex(), filePath);
 
     setWindowTitle("Fadyedit | " + filePath);
