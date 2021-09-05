@@ -67,6 +67,12 @@ private slots:
 
     void on_actionZoom_out_triggered();
 
+    void textEditChanged();
+
+    void treeCustomMenu(const QPoint &pos);
+
+    void updateStatus();
+
 private:
     Ui::MainWindow *ui;
 

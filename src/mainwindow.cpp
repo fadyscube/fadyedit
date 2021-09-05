@@ -29,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->window->addWidget(this->treeView);
     this->window->addWidget(this->tabsWidget);
 
+    this->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(this->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(treeCustomMenu(QPoint)));
+
     connect(this->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(openTreeViewFile(QModelIndex)));
 
     setCentralWidget(this->window);
@@ -56,7 +60,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::createTab()
 {
-
     QFrame *tabFrame = new QFrame(this);
     QVBoxLayout *tabsLayout = new QVBoxLayout(tabFrame);
 
@@ -73,7 +76,8 @@ void MainWindow::createTab()
     fileEdit->setStyleSheet(texteditStyle);
 
     QLabel *status = new QLabel(this);
-    status->setText("No file opened.");
+//    status->setText("No file opened.");
+    status->setText("Line 0, Column 0");
     status->setObjectName("status");
 
     QFile statusFile(":/styles/status.css");
@@ -88,6 +92,9 @@ void MainWindow::createTab()
 
     int tab = this->tabsWidget->addTab(tabFrame, "Untitled");
     this->tabsWidget->setCurrentIndex(tab);
+
+    connect(MainWindow::currentTextEdit(), SIGNAL(textChanged()), this, SLOT(textEditChanged()));
+    connect(MainWindow::currentTextEdit(), SIGNAL(cursorPositionChanged()), this, SLOT(updateStatus()));
 }
 
 void MainWindow::on_actionNew_triggered()
@@ -113,9 +120,11 @@ void MainWindow::on_actionSave_as_triggered()
     QString text = MainWindow::currentTextEdit()->toPlainText();
     out << text;
 
-    MainWindow::openTabFile(filePath);
 
     file.close();
+
+    MainWindow::currentTextEdit()->setPlainText(text);
+    MainWindow::openTabFile(filePath);
 }
 
 void MainWindow::on_actionCut_triggered()
@@ -156,7 +165,7 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionClose_file_triggered()
 {
-    this->tabsWidget->removeTab(this->tabsWidget->currentIndex());
+    MainWindow::closeTab(this->tabsWidget->currentIndex());
 }
 
 
@@ -169,7 +178,8 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName = MainWindow::currentStatus()->text();
+//    QString fileName = MainWindow::currentStatus()->text();
+    QString fileName = this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex());
 
     QFile file(fileName);
 
@@ -188,11 +198,30 @@ void MainWindow::on_actionSave_triggered()
     out << text;
 
     file.close();
+
+    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), this->tabsWidget->tabText(this->tabsWidget->currentIndex()).remove(0, 1));
 }
 
 void MainWindow::closeTab(int index)
 {
-    this->tabsWidget->removeTab(index);
+    if (this->tabsWidget->tabText(this->tabsWidget->currentIndex()).at(0) != "*"){
+        this->tabsWidget->removeTab(index);
+    } else {
+        QMessageBox msgBox;
+        msgBox.setText("<h4>Do you want to save ?</h4>");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+            case QMessageBox::Yes:
+                MainWindow::on_actionSave_triggered();
+                this->tabsWidget->removeTab(index);
+                break;
+            case QMessageBox::No:
+                this->tabsWidget->removeTab(index);
+                break;
+        }
+    }
 }
 
 void MainWindow::on_actionAbout_Fadyedit_triggered()
@@ -256,9 +285,9 @@ void MainWindow::openTabFile(QString filePath)
         return;
     }
 
-    MainWindow::currentStatus()->setText(filePath);
+//    MainWindow::currentStatus()->setText(filePath);
+    this->tabsWidget->setTabToolTip(this->tabsWidget->currentIndex(), filePath);
 
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
     setWindowTitle("Fadyedit | " + filePath);
 
     QTextStream in(&file);
@@ -269,6 +298,8 @@ void MainWindow::openTabFile(QString filePath)
     MainWindow::currentTextEdit()->setPlainText(text);
 
     file.close();
+
+    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
 }
 
 QPlainTextEdit* MainWindow::currentTextEdit()
@@ -305,3 +336,43 @@ void MainWindow::on_actionZoom_out_triggered()
     MainWindow::currentTextEdit()->zoomOut(2);
 }
 
+void MainWindow::textEditChanged ()
+{
+    if (this->tabsWidget->tabText(this->tabsWidget->currentIndex()).at(0) != "*"){
+        this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), "*"+this->tabsWidget->tabText(this->tabsWidget->currentIndex()));
+    }
+}
+
+void MainWindow::treeCustomMenu (const QPoint &pos)
+{
+    QMenu contextMenu(tr("Context menu"), this);
+
+    QFile contextmenuFile(":/styles/menubar.css");
+    contextmenuFile.open(QFile::ReadOnly);
+    QString contextmenuStyle = QLatin1String(contextmenuFile.readAll());
+
+    contextMenu.setStyleSheet(contextmenuStyle);
+
+    QAction action1("Remove Data Point", this);
+    contextMenu.addAction(&action1);
+
+    QAction action2("Remove Data Point", this);
+    contextMenu.addAction(&action2);
+
+    QAction action3("Remove Data Point", this);
+    contextMenu.addAction(&action3);
+
+    QAction action4("Remove Data Point", this);
+    contextMenu.addAction(&action4);
+
+    contextMenu.exec(mapToGlobal(pos));
+}
+
+void MainWindow::updateStatus()
+{
+    QString line = QString::number(MainWindow::currentTextEdit()->textCursor().blockNumber());
+    QString column = QString::number(MainWindow::currentTextEdit()->textCursor().columnNumber());
+
+    QString status = "Line " + line + ", Column " + column;
+    MainWindow::currentStatus()->setText(status);
+}
