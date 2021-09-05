@@ -69,8 +69,6 @@ private slots:
 
     void textEditChanged();
 
-    void treeCustomMenu(const QPoint &pos);
-
     void updateStatus();
 
 private:

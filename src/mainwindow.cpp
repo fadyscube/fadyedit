@@ -31,13 +31,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(this->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(treeCustomMenu(QPoint)));
-
     connect(this->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(openTreeViewFile(QModelIndex)));
 
     setCentralWidget(this->window);
 
-    MainWindow::createTab();
     this->tabsWidget->setTabsClosable(true);
     connect(this->tabsWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
     this->tabsWidget->setMovable(true);
@@ -76,7 +73,6 @@ void MainWindow::createTab()
     fileEdit->setStyleSheet(texteditStyle);
 
     QLabel *status = new QLabel(this);
-//    status->setText("No file opened.");
     status->setText("Line 0, Column 0");
     status->setObjectName("status");
 
@@ -93,6 +89,8 @@ void MainWindow::createTab()
     int tab = this->tabsWidget->addTab(tabFrame, "Untitled");
     this->tabsWidget->setCurrentIndex(tab);
 
+    this->tabsWidget->setTabToolTip(tab, "Untitled");
+
     connect(MainWindow::currentTextEdit(), SIGNAL(textChanged()), this, SLOT(textEditChanged()));
     connect(MainWindow::currentTextEdit(), SIGNAL(cursorPositionChanged()), this, SLOT(updateStatus()));
 }
@@ -104,6 +102,10 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
+    if (this->tabsWidget->count() == 0) {
+        QMessageBox::warning(this, "Warning", "Cannot save file !");
+        return;
+    }
     QString filePath = QFileDialog::getSaveFileName(this, "Save as ...");
     QFile file(filePath);
 
@@ -119,7 +121,6 @@ void MainWindow::on_actionSave_as_triggered()
 
     QString text = MainWindow::currentTextEdit()->toPlainText();
     out << text;
-
 
     file.close();
 
@@ -173,14 +174,18 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Open the file");
 
+    MainWindow::createTab();
     MainWindow::openTabFile(filePath);
 }
 
 void MainWindow::on_actionSave_triggered()
 {
-//    QString fileName = MainWindow::currentStatus()->text();
     QString fileName = this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex());
 
+    if (fileName == "Untitled") {
+        MainWindow::on_actionSave_as_triggered();
+        return;
+    }
     QFile file(fileName);
 
     if (!file.open(QFile::WriteOnly | QFile::Text)){
@@ -199,7 +204,8 @@ void MainWindow::on_actionSave_triggered()
 
     file.close();
 
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), this->tabsWidget->tabText(this->tabsWidget->currentIndex()).remove(0, 1));
+    QString newTabText = this->tabsWidget->tabText(this->tabsWidget->currentIndex()).remove(0, 1);
+    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), newTabText);
 }
 
 void MainWindow::closeTab(int index)
@@ -214,7 +220,11 @@ void MainWindow::closeTab(int index)
 
         switch (ret) {
             case QMessageBox::Yes:
-                MainWindow::on_actionSave_triggered();
+                if (this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex()) == "Untitled"){
+                    MainWindow::on_actionSave_as_triggered();
+                } else {
+                    MainWindow::on_actionSave_triggered();
+                }
                 this->tabsWidget->removeTab(index);
                 break;
             case QMessageBox::No:
@@ -285,7 +295,6 @@ void MainWindow::openTabFile(QString filePath)
         return;
     }
 
-//    MainWindow::currentStatus()->setText(filePath);
     this->tabsWidget->setTabToolTip(this->tabsWidget->currentIndex(), filePath);
 
     setWindowTitle("Fadyedit | " + filePath);
@@ -338,34 +347,11 @@ void MainWindow::on_actionZoom_out_triggered()
 
 void MainWindow::textEditChanged ()
 {
-    if (this->tabsWidget->tabText(this->tabsWidget->currentIndex()).at(0) != "*"){
-        this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), "*"+this->tabsWidget->tabText(this->tabsWidget->currentIndex()));
+    QString tabName = this->tabsWidget->tabText(this->tabsWidget->currentIndex());
+
+    if (tabName.at(0) != "*"){
+        this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), "*"+tabName);
     }
-}
-
-void MainWindow::treeCustomMenu (const QPoint &pos)
-{
-    QMenu contextMenu(tr("Context menu"), this);
-
-    QFile contextmenuFile(":/styles/menubar.css");
-    contextmenuFile.open(QFile::ReadOnly);
-    QString contextmenuStyle = QLatin1String(contextmenuFile.readAll());
-
-    contextMenu.setStyleSheet(contextmenuStyle);
-
-    QAction action1("Remove Data Point", this);
-    contextMenu.addAction(&action1);
-
-    QAction action2("Remove Data Point", this);
-    contextMenu.addAction(&action2);
-
-    QAction action3("Remove Data Point", this);
-    contextMenu.addAction(&action3);
-
-    QAction action4("Remove Data Point", this);
-    contextMenu.addAction(&action4);
-
-    contextMenu.exec(mapToGlobal(pos));
 }
 
 void MainWindow::updateStatus()
