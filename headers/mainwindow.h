@@ -5,9 +5,12 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMainWindow>
-#include <QPlainTextEdit>
+//#include <CodeEditor>
 #include <QSplitter>
 #include <QTreeView>
+
+#include "headers/linenumberarea.h"
+#include "headers/codeeditor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -59,7 +62,7 @@ private slots:
 
     void openTabFile(QString filePath);
 
-    QPlainTextEdit* currentTextEdit();
+    CodeEditor* currentTextEdit();
 
     QLabel* currentStatus();
 

@@ -60,7 +60,7 @@ void MainWindow::createTab()
     QFrame *tabFrame = new QFrame(this);
     QVBoxLayout *tabsLayout = new QVBoxLayout(tabFrame);
 
-    QPlainTextEdit *fileEdit = new QPlainTextEdit();
+    CodeEditor *fileEdit = new CodeEditor();
     QFont font = fileEdit->document()->defaultFont();
     font.setFamily("Source Code Pro");
     fileEdit->setFont(font);
@@ -73,7 +73,7 @@ void MainWindow::createTab()
     fileEdit->setStyleSheet(texteditStyle);
 
     QLabel *status = new QLabel(this);
-    status->setText("Line 0, Column 0");
+    status->setText("Line 1, Column 1");
     status->setObjectName("status");
 
     QFile statusFile(":/styles/status.css");
@@ -311,16 +311,16 @@ void MainWindow::openTabFile(QString filePath)
     this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
 }
 
-QPlainTextEdit* MainWindow::currentTextEdit()
+CodeEditor* MainWindow::currentTextEdit()
 {
-    QList<QPlainTextEdit *> fileEditList = this->tabsWidget->findChildren<QPlainTextEdit *>("fileEdit");
+    QList<CodeEditor *> fileEditList = this->tabsWidget->findChildren<CodeEditor *>("fileEdit");
     for (int i=0; i<fileEditList.count(); ++i) {
         if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
             return fileEditList[i];
         }
     }
 
-    return new QPlainTextEdit;
+    return new CodeEditor;
 }
 
 QLabel* MainWindow::currentStatus()
@@ -356,8 +356,8 @@ void MainWindow::textEditChanged ()
 
 void MainWindow::updateStatus()
 {
-    QString line = QString::number(MainWindow::currentTextEdit()->textCursor().blockNumber());
-    QString column = QString::number(MainWindow::currentTextEdit()->textCursor().columnNumber());
+    QString line = QString::number(MainWindow::currentTextEdit()->textCursor().blockNumber() + 1);
+    QString column = QString::number(MainWindow::currentTextEdit()->textCursor().columnNumber() + 1);
 
     QString status = "Line " + line + ", Column " + column;
     MainWindow::currentStatus()->setText(status);
