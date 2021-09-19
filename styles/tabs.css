@@ -6,13 +6,17 @@ QTabWidget::pane {
 
 QTabWidget::tab-bar {
    background: red;
+   alignment: left;
 }
 
 QTabBar::tab {
     background: rgb(33, 37, 43);
     border: 1px solid rgb(24, 36, 31);
-    padding: 5px 50px;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     color: #6c7079;
+    width: 100px;
 }
 
 QTabBar::tab:selected {
@@ -24,6 +28,7 @@ QTabBar::tab:selected {
 
 QTabBar::close-button {
     image: url(":/images/close.png");
+    subcontrol-position: right;
 }
 
 QTabBar::close-button:hover {

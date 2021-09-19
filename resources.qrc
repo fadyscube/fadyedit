@@ -7,5 +7,6 @@
         <file>styles/menubar.css</file>
         <file>styles/aboutbox.css</file>
         <file>images/close.png</file>
+        <file>fonts/SourceCodePro-Regular.ttf</file>
     </qresource>
 </RCC>

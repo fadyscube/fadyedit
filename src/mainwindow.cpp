@@ -50,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent)
     menubarFile.open(QFile::ReadOnly);
     QString menubarStyle = QLatin1String(menubarFile.readAll());
     ui->menubar->setStyleSheet(menubarStyle);
+
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Regular.ttf");
 }
 
 MainWindow::~MainWindow()
