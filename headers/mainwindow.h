@@ -5,9 +5,14 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMainWindow>
-//#include <CodeEditor>
 #include <QSplitter>
 #include <QTreeView>
+#include <QLabel>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTextStream>
+#include <QModelIndex>
+#include <QFontMetrics>
 
 #include "headers/linenumberarea.h"
 #include "headers/codeeditor.h"

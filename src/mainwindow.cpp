@@ -1,13 +1,6 @@
 #include "headers/mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QLabel>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QTextStream>
-#include <QModelIndex>
-#include <QFontMetrics>
-
 #include <headers/linenumberarea.h>
 
 using namespace std;
@@ -20,31 +13,31 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("Fadyedit");
 
-    this->treeView->setMaximumWidth(0);
-    this->treeView->setMinimumWidth(0);
+    treeView->setMaximumWidth(0);
+    treeView->setMinimumWidth(0);
 
     QFile treeviewFile(":/styles/treeview.css");
     treeviewFile.open(QFile::ReadOnly);
     QString treeviewStyle = QLatin1String(treeviewFile.readAll());
-    this->treeView->setStyleSheet(treeviewStyle);
+    treeView->setStyleSheet(treeviewStyle);
 
-    this->window->addWidget(this->treeView);
-    this->window->addWidget(this->tabsWidget);
+    window->addWidget(treeView);
+    window->addWidget(tabsWidget);
 
-    this->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    connect(this->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(openTreeViewFile(QModelIndex)));
+    connect(treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(openTreeViewFile(QModelIndex)));
 
-    setCentralWidget(this->window);
+    setCentralWidget(window);
 
-    this->tabsWidget->setTabsClosable(true);
-    connect(this->tabsWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-    this->tabsWidget->setMovable(true);
+    tabsWidget->setTabsClosable(true);
+    connect(tabsWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    tabsWidget->setMovable(true);
 
     QFile tabsFile(":/styles/tabs.css");
     tabsFile.open(QFile::ReadOnly);
     QString tabsStyle = QLatin1String(tabsFile.readAll());
-    this->tabsWidget->setStyleSheet(tabsStyle);
+    tabsWidget->setStyleSheet(tabsStyle);
 
     QFile menubarFile(":/styles/menubar.css");
     menubarFile.open(QFile::ReadOnly);
@@ -90,10 +83,10 @@ void MainWindow::createTab()
 
 //    tabFrame->setLayout(tabsLayout);
 
-    int tab = this->tabsWidget->addTab(tabFrame, "Untitled");
-    this->tabsWidget->setCurrentIndex(tab);
+    int tab = tabsWidget->addTab(tabFrame, "Untitled");
+    tabsWidget->setCurrentIndex(tab);
 
-    this->tabsWidget->setTabToolTip(tab, "Untitled");
+    tabsWidget->setTabToolTip(tab, "Untitled");
 
     connect(MainWindow::currentTextEdit(), SIGNAL(textChanged()), this, SLOT(textEditChanged()));
     connect(MainWindow::currentTextEdit(), SIGNAL(cursorPositionChanged()), this, SLOT(updateStatus()));
@@ -106,7 +99,7 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
-    if (this->tabsWidget->count() == 0) {
+    if (tabsWidget->count() == 0) {
         QMessageBox::warning(this, "Warning", "Cannot save file !");
         return;
     }
@@ -170,7 +163,7 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionClose_file_triggered()
 {
-    MainWindow::closeTab(this->tabsWidget->currentIndex());
+    MainWindow::closeTab(tabsWidget->currentIndex());
 }
 
 
@@ -184,7 +177,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName = this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex());
+    QString fileName = tabsWidget->tabToolTip(tabsWidget->currentIndex());
 
     if (fileName == "Untitled") {
         MainWindow::on_actionSave_as_triggered();
@@ -208,14 +201,14 @@ void MainWindow::on_actionSave_triggered()
 
     file.close();
 
-    QString newTabText = this->tabsWidget->tabText(this->tabsWidget->currentIndex()).remove(0, 1);
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), newTabText);
+    QString newTabText = tabsWidget->tabText(tabsWidget->currentIndex()).remove(0, 1);
+    tabsWidget->setTabText(tabsWidget->currentIndex(), newTabText);
 }
 
 void MainWindow::closeTab(int index)
 {
-    if (this->tabsWidget->tabText(this->tabsWidget->currentIndex()).at(0) != "*"){
-        this->tabsWidget->removeTab(index);
+    if (tabsWidget->tabText(tabsWidget->currentIndex()).at(0) != "*"){
+        tabsWidget->removeTab(index);
     } else {
         QMessageBox msgBox;
         msgBox.setText("<h4>Do you want to save ?</h4>");
@@ -224,15 +217,15 @@ void MainWindow::closeTab(int index)
 
         switch (ret) {
             case QMessageBox::Yes:
-                if (this->tabsWidget->tabToolTip(this->tabsWidget->currentIndex()) == "Untitled"){
+                if (tabsWidget->tabToolTip(tabsWidget->currentIndex()) == "Untitled"){
                     MainWindow::on_actionSave_as_triggered();
                 } else {
                     MainWindow::on_actionSave_triggered();
                 }
-                this->tabsWidget->removeTab(index);
+                tabsWidget->removeTab(index);
                 break;
             case QMessageBox::No:
-                this->tabsWidget->removeTab(index);
+                tabsWidget->removeTab(index);
                 break;
         }
     }
@@ -258,23 +251,23 @@ void MainWindow::on_actionOpen_folder_triggered()
 {
     QUrl dirPath = QFileDialog::getExistingDirectory(this, "Open the file", "/home/fadyscube", QFileDialog::ShowDirsOnly);
 
-    this->dirModel->setRootPath(dirPath.toString());
+    dirModel->setRootPath(dirPath.toString());
 
-    this->treeView->setModel(this->dirModel);
-    this->treeView->setRootIndex(this->dirModel->index(dirPath.toString()));
-    this->treeView->hideColumn(1);
-    this->treeView->hideColumn(2);
-    this->treeView->hideColumn(3);
+    treeView->setModel(dirModel);
+    treeView->setRootIndex(dirModel->index(dirPath.toString()));
+    treeView->hideColumn(1);
+    treeView->hideColumn(2);
+    treeView->hideColumn(3);
 
-    this->treeView->setMinimumWidth(this->width() * 20 / 100);
-    this->treeView->setMaximumWidth(this->width() * 30 / 100);
+    treeView->setMinimumWidth(width() * 20 / 100);
+    treeView->setMaximumWidth(width() * 30 / 100);
 }
 
 void MainWindow::openTreeViewFile(QModelIndex index)
 {
     MainWindow::createTab();
 
-    QString filePath = this->dirModel->fileInfo(index).absoluteFilePath();
+    QString filePath = dirModel->fileInfo(index).absoluteFilePath();
 
     MainWindow::openTabFile(filePath);
 }
@@ -283,7 +276,7 @@ void MainWindow::openNewTabTreeViewFile(QModelIndex index)
 {
     MainWindow::createTab();
 
-    QString filePath = this->dirModel->fileInfo(index).absoluteFilePath();
+    QString filePath = dirModel->fileInfo(index).absoluteFilePath();
 
     MainWindow::openTabFile(filePath);
 }
@@ -299,7 +292,7 @@ void MainWindow::openTabFile(QString filePath)
         return;
     }
 
-    this->tabsWidget->setTabToolTip(this->tabsWidget->currentIndex(), filePath);
+    tabsWidget->setTabToolTip(tabsWidget->currentIndex(), filePath);
 
     setWindowTitle("Fadyedit | " + filePath);
 
@@ -312,14 +305,14 @@ void MainWindow::openTabFile(QString filePath)
 
     file.close();
 
-    this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), fileName.fileName());
+    tabsWidget->setTabText(tabsWidget->currentIndex(), fileName.fileName());
 }
 
 CodeEditor* MainWindow::currentTextEdit()
 {
-    QList<CodeEditor *> fileEditList = this->tabsWidget->findChildren<CodeEditor *>("fileEdit");
+    QList<CodeEditor *> fileEditList = tabsWidget->findChildren<CodeEditor *>("fileEdit");
     for (int i=0; i<fileEditList.count(); ++i) {
-        if (this->tabsWidget->indexOf(fileEditList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
+        if (tabsWidget->indexOf(fileEditList[i]->parentWidget()) == tabsWidget->currentIndex()) {
             return fileEditList[i];
         }
     }
@@ -329,9 +322,9 @@ CodeEditor* MainWindow::currentTextEdit()
 
 QLabel* MainWindow::currentStatus()
 {
-    QList<QLabel *> statusList = this->tabsWidget->findChildren<QLabel *>("status");
+    QList<QLabel *> statusList = tabsWidget->findChildren<QLabel *>("status");
     for (int i=0; i<statusList.count(); ++i) {
-        if (this->tabsWidget->indexOf(statusList[i]->parentWidget()) == this->tabsWidget->currentIndex()) {
+        if (tabsWidget->indexOf(statusList[i]->parentWidget()) == tabsWidget->currentIndex()) {
             return statusList[i];
         }
     }
@@ -341,10 +334,10 @@ QLabel* MainWindow::currentStatus()
 
 void MainWindow::textEditChanged ()
 {
-    QString tabName = this->tabsWidget->tabText(this->tabsWidget->currentIndex());
+    QString tabName = tabsWidget->tabText(tabsWidget->currentIndex());
 
     if (tabName.at(0) != "*"){
-        this->tabsWidget->setTabText(this->tabsWidget->currentIndex(), "*"+tabName);
+        tabsWidget->setTabText(tabsWidget->currentIndex(), "*"+tabName);
     }
 }
 
