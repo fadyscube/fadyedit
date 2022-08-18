@@ -249,7 +249,7 @@ void MainWindow::on_actionAbout_Fadyedit_triggered()
 
 void MainWindow::on_actionOpen_folder_triggered()
 {
-    QUrl dirPath = QFileDialog::getExistingDirectory(this, "Open the file", "/home/fadyscube", QFileDialog::ShowDirsOnly);
+    QUrl dirPath = QFileDialog::getExistingDirectory(this, "Open the file", "/", QFileDialog::ShowDirsOnly);
 
     dirModel->setRootPath(dirPath.toString());
 
